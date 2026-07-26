@@ -1,0 +1,48 @@
+# Troubleshooting Log
+
+## Issue
+
+After completing the AWS security monitoring setup, I accessed the secret again but did not receive an email notification from the alarm.
+
+## What I Checked
+
+### 1. CloudTrail event recording
+
+I verified that the `GetSecretValue` event was being recorded in CloudTrail Event History. This confirmed that the secret access action itself was being logged correctly.
+
+### 2. CloudTrail to CloudWatch log delivery
+
+I checked whether CloudTrail was successfully sending logs to the CloudWatch log group. This confirmed that the monitoring pipeline was receiving logs.
+
+### 3. CloudWatch metric filter
+
+I reviewed the metric filter pattern to make sure it was correctly matching `GetSecretValue`. This was important because the alarm depends on the filter to count secret access events.
+
+### 4. CloudWatch alarm configuration
+
+I checked the alarm threshold, period, namespace, and metric name to make sure the alarm would trigger when the secret was accessed at least once.
+
+### 5. SNS topic and subscription
+
+I confirmed that the SNS topic existed and that my email subscription was confirmed. I also checked whether the email may have gone to spam or junk.
+
+### 6. Direct SNS test
+
+To confirm that SNS was working, I manually published a test message to the topic. This helped verify whether email delivery itself was functioning properly.
+
+## Fixes and Validation
+
+* Confirmed the SNS subscription from the email inbox
+* Rechecked the CloudWatch metric filter pattern
+* Waited for the alarm evaluation period to complete
+* Accessed the secret again to trigger a fresh event
+* Verified that the alarm moved to the **In Alarm** state
+* Confirmed that the alert email was received successfully
+
+## Result
+
+The issue was resolved after validating the SNS subscription and confirming that the CloudWatch alarm and metric filter were correctly configured. Once the full pipeline was working, email notifications were triggered properly when the secret was accessed.
+
+## Key Lesson
+
+Troubleshooting cloud monitoring systems requires checking each stage of the alert pipeline in order: event generation, log collection, pattern filtering, alarm triggering, and notification delivery.
